@@ -1,24 +1,24 @@
 #include <stdio.h>
 #include <time.h>
-int count = 0;					/*ID‚ÌƒJƒEƒ“ƒgiID‚ª“o˜^‚³‚ê‚é‚²‚Æ‚ÉƒJƒEƒ“ƒgj*/
-int count1[5] = { 0 };				/*ŠeID‚Ìo‹ÎƒJƒEƒ“ƒg*/
-int flag;					/*o‹ÎA‘Ş‹Î‚Ìæ“¾‚ğ”»’f‚·‚é•Ï”*/
+int count = 0;					/*IDã®ã‚«ã‚¦ãƒ³ãƒˆï¼ˆIDãŒç™»éŒ²ã•ã‚Œã‚‹ã”ã¨ã«ã‚«ã‚¦ãƒ³ãƒˆï¼‰*/
+int count1[5] = { 0 };				/*å„IDã®å‡ºå‹¤ã‚«ã‚¦ãƒ³ãƒˆ*/
+int flag;					/*å‡ºå‹¤ã€é€€å‹¤ã®å–å¾—ã‚’åˆ¤æ–­ã™ã‚‹å¤‰æ•°*/
 int i, j;
-int  no;					/*ID‚Ìƒiƒ“ƒo[*/
-static char *week[] = { "“ú", "Œ", "‰Î", "…", "–Ø", "‹à", "“y" };
+int  no;					/*IDã®ãƒŠãƒ³ãƒãƒ¼*/
+static char *week[] = { "æ—¥", "æœˆ", "ç«", "æ°´", "æœ¨", "é‡‘", "åœŸ" };
 
-/*o‹Î‚ÌŠÔ‹L˜^*/
+/*å‡ºå‹¤æ™‚ã®æ™‚é–“è¨˜éŒ²*/
 typedef struct{
-	int gotowork_year;			/*”N*/
-	int gotowork_month;			/*Œ*/
-	int gotowork_day;			/*“ú*/
-	int gotowork_week;			/*—j“ú*/
-	int gotowork_hour;			/**/
-	int gotowork_minute;			/*•ª*/
-	int gotowork_second;			/*•b*/
+	int gotowork_year;			/*å¹´*/
+	int gotowork_month;			/*æœˆ*/
+	int gotowork_day;			/*æ—¥*/
+	int gotowork_week;			/*æ›œæ—¥*/
+	int gotowork_hour;			/*æ™‚*/
+	int gotowork_minute;			/*åˆ†*/
+	int gotowork_second;			/*ç§’*/
 }gotowork_T;
 
-/*‘Ş‹Î‚ÌŠÔ‹L˜^*/
+/*é€€å‹¤æ™‚ã®æ™‚é–“è¨˜éŒ²*/
 typedef struct{
 	int clockout_year;
 	int clockout_month;
@@ -29,18 +29,20 @@ typedef struct{
 	int clockout_second;
 } clockout_T;
 
-/*‘Ş‹Îo‹Î‹y‚Ñ*/
+/*é€€å‹¤æ™‚å‡ºå‹¤æ™‚åŠã³*/
 typedef struct{
 	int ID;
-	clock_t start_T;			/*‚»‚Ì“ú‚Ì‹Î–±ŠÔŒv‘ªŠJn*/
-	clock_t end_T;				/*‚»‚Ì‚Ğ‚Ì‹Î–±ŠÔŒv‘ªI—¹*/
+	clock_t start_T;			/*ãã®æ—¥ã®å‹¤å‹™æ™‚é–“è¨ˆæ¸¬é–‹å§‹*/
+	clock_t end_T;				/*ãã®ã²ã®å‹¤å‹™æ™‚é–“è¨ˆæ¸¬çµ‚äº†*/
 	double working_T;
-	gotowork_T start_time;			/*‚»‚Ì“ú‚Ìo‹Î‚ÌŠÔ‹L˜^*/
-	clockout_T end_time;			/*‚»‚Ì“ú‚Ì‘Ş‹Î‚ÌŠÔ‹L˜^*/
+	gotowork_T start_time;			/*ãã®æ—¥ã®å‡ºå‹¤æ™‚ã®æ™‚é–“è¨˜éŒ²*/
+	clockout_T end_time;			/*ãã®æ—¥ã®é€€å‹¤æ™‚ã®æ™‚é–“è¨˜éŒ²*/
 }worker;
-worker a[5][32];				/*5l•ª‚ÌID‹L˜^*/
+worker a[5][32];				/*5äººåˆ†ã®IDè¨˜éŒ²*/
 
-/*o‹Î‚¨‚æ‚Ñ‘Ş‹Î‚Ì“o˜^*/
+
+
+/*å‡ºå‹¤æ™‚åˆ»ãŠã‚ˆã³é€€å‹¤æ™‚åˆ»ã®ç™»éŒ²*/
 int put_data(int n, int flag){
 	time_t  now;;
 	struct tm
@@ -65,56 +67,56 @@ int put_data(int n, int flag){
 		a[n][count1[n]].end_time.clockout_minute = tm_now->tm_min;
 		a[n][count1[n]].end_time.clockout_second = tm_now->tm_sec;
 		a[n][count1[n]].working_T =
-			(double)((a[n][count1[n]].end_T - a[n][count1[n]].start_T) / CLOCKS_PER_SEC);/*‹Î–±ŠÔ‚ÌŒvZ*/
+			(double)((a[n][count1[n]].end_T - a[n][count1[n]].start_T) / CLOCKS_PER_SEC);		/*å‹¤å‹™æ™‚é–“ã®è¨ˆç®—*/
 	}
 }
 
 
 
 
-/*o‹Î“ü—Í*/
+/*å‡ºå‹¤å…¥åŠ›*/
 void gotowork(){
 
 	if (count1 == 0){
-		printf("\a“ü—Í•s”\BID‚Ì“o˜^‚ª‚ ‚è‚Ü‚¹‚ñB\n");
+		printf("\aå…¥åŠ›ä¸èƒ½ã€‚IDã®ç™»éŒ²ãŒã‚ã‚Šã¾ã›ã‚“ã€‚\n");
 		return NULL;
 	}
-	printf("ID‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B :");
+	printf("IDã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚ :");
 	scanf("%d", &no);
 	for (i = 0; i < count; i++){
-		if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T == 0){			/*‚»‚Ì“ú‚Éo‹Î‚³‚ê‚Ä‚é‚©‚Ç‚¤‚©*/
-			a[i][count1[i]].start_T = clock();									/*‹Î–±ŠÔŒv‘ªŠJn*/
+		if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T == 0){			/*ãã®æ—¥ã«å‡ºå‹¤ã•ã‚Œã¦ã‚‹ã‹ã©ã†ã‹*/
+			a[i][count1[i]].start_T = clock();					/*å‹¤å‹™æ™‚é–“è¨ˆæ¸¬é–‹å§‹*/
 			flag = 0;
-			put_data(i, flag);													/*o‹Î‚Ì“o˜^*/
-			printf("o‹Î“o˜^‚ğŠ®—¹‚µ‚Ü‚µ‚½B\n");
+			put_data(i, flag);							/*å‡ºå‹¤æ™‚åˆ»ã®ç™»éŒ²*/
+			printf("å‡ºå‹¤ç™»éŒ²ã‚’å®Œäº†ã—ã¾ã—ãŸã€‚\n");
 			return NULL;
 		}
 		else if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T != 0){
-			printf("\a“ü—Í•s”\BŠù‚Éo‹Î‚³‚ê‚Ä‚Ü‚·B\n");
+			printf("\aå…¥åŠ›ä¸èƒ½ã€‚æ—¢ã«å‡ºå‹¤ã•ã‚Œã¦ã¾ã™ã€‚\n");
 			return NULL;
 		}
 		else if (i == count - 1){
-			printf("\a“ü—Í•s”\B‚»‚ÌID‚Í“o˜^‚³‚ê‚Ä‚Ü‚¹‚ñB\n");
+			printf("\aå…¥åŠ›ä¸èƒ½ã€‚ãã®IDã¯ç™»éŒ²ã•ã‚Œã¦ã¾ã›ã‚“ã€‚\n");
 			return NULL;
 		}
 	}
 }
-/*‘Ş‹Î“ü—Í*/
+/*é€€å‹¤å…¥åŠ›*/
 void clockout(){
 	if (count == 0){
-		printf("\a“ü—Í•s”\BID‚Ì“o˜^‚ª‚ ‚è‚Ü‚¹‚ñB\n");
+		printf("\aå…¥åŠ›ä¸èƒ½ã€‚IDã®ç™»éŒ²ãŒã‚ã‚Šã¾ã›ã‚“ã€‚\n");
 		return NULL;
 	}
-	printf("ID‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B:");
+	printf("IDã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚:");
 	scanf("%d", &no);													
 	for (i = 0; i < count; i++){
-		if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T != 0 && a[i][count1[i]].end_T == 0){				/*‚»‚Ì“ú‚É‘Ş‹Î‚³‚ê‚Ä‚é‚©‚Ç‚¤‚©*/
-			a[i][count1[i]].end_T = clock();																	/*‹Î–±ŠÔŒv‘ªI—¹*/
+		if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T != 0 && a[i][count1[i]].end_T == 0){		/*ãã®æ—¥ã«é€€å‹¤ã•ã‚Œã¦ã‚‹ã‹ã©ã†ã‹*/
+			a[i][count1[i]].end_T = clock();																			/*å‹¤å‹™æ™‚é–“è¨ˆæ¸¬çµ‚äº†*/
 			flag = 1;
-			put_data(i, flag);																					/*‘Ş‹Î‚Ì“o˜^*/
+			put_data(i, flag);																					/*é€€å‹¤æ™‚åˆ»ã®ç™»éŒ²*/
 			count1[i]++;
 			for (i = 0; i < 5; i++){
-				if (count1[i] == 32){																			/*count1[i] == 32‚È‚ç‚Îƒf[ƒ^‚ğ‘O“ú‚É‚Ã‚ç‚·*/
+				if (count1[i] == 32){			/*count1[i] == 32ãªã‚‰ã°ãƒ‡ãƒ¼ã‚¿ã‚’å‰æ—¥ã«ã¥ã‚‰ã™*/
 					for (int d = 0; d < 31; d++){
 						a[i][d].start_time.gotowork_year = a[i][d + 1].start_time.gotowork_year;
 						a[i][d].start_time.gotowork_month = a[i][d + 1].start_time.gotowork_month;
@@ -139,44 +141,44 @@ void clockout(){
 					count1[i] = 31;
 				}
 			}
-			printf("‘Ş‹Î“o˜^‚ğŠ®—¹‚µ‚Ü‚µ‚½B\n");
+			printf("é€€å‹¤ç™»éŒ²ã‚’å®Œäº†ã—ã¾ã—ãŸã€‚\n");
 
 			return NULL;
 		}
 		else if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T == 0){
-			printf("\a“ü—Í•s”\Bo‹Î‚³‚ê‚Ä‚Ü‚¹‚ñB\n");
+			printf("\aå…¥åŠ›ä¸èƒ½ã€‚å‡ºå‹¤ã•ã‚Œã¦ã¾ã›ã‚“ã€‚\n");
 			return NULL;
 		}
 		else if (a[i][count1[i]].ID == no&&a[i][count1[i]].end_T != 0){
-			printf("\a“ü—Í•s”\BŠù‚É‘Ş‹Î‚³‚ê‚Ä‚Ü‚·B\n");
+			printf("\aå…¥åŠ›ä¸èƒ½ã€‚æ—¢ã«é€€å‹¤ã•ã‚Œã¦ã¾ã™ã€‚\n");
 			return NULL;
 		}
 		else if (i == count - 1){
-			printf("\a“ü—Í•s”\B‚»‚ÌID‚Í“o˜^‚³‚ê‚Ä‚Ü‚¹‚ñB\n");
+			printf("\aå…¥åŠ›ä¸èƒ½ã€‚ãã®IDã¯ç™»éŒ²ã•ã‚Œã¦ã¾ã›ã‚“ã€‚\n");
 			return NULL;
 		}
 	}
 }
 
-/*ID“o˜^*/
+/*IDç™»éŒ²*/
 
 void Registration_Member(){
-	printf("ID3Œ…‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢BF");
+	printf("ID3æ¡ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚ï¼š");
 	scanf("%d", &no);
 	int i = no;
 	int digit = 0;
-	while (i != 0){											/*Œ…”‚ÌƒJƒEƒ“ƒg*/
+	while (i != 0){								/*æ¡æ•°ã®ã‚«ã‚¦ãƒ³ãƒˆ*/
 		i = i / 10;
 		++digit;
 	}
 	for (i = 0; i < count; i++){
 		if (a[i][0].ID == no){
-			printf("\a“o˜^•s”\BŠù‚É“o˜^‚³‚ê‚Ä‚Ü‚·B\n");
+			printf("\aç™»éŒ²ä¸èƒ½ã€‚æ—¢ã«ç™»éŒ²ã•ã‚Œã¦ã¾ã™ã€‚\n");
 			return NULL;
 		}
 	}
 	if (digit != 3){
-		printf("\a“o˜^•s”\B3Œ…‚Å“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B\n");
+		printf("\aç™»éŒ²ä¸èƒ½ã€‚3æ¡ã§å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚\n");
 		return NULL;
 	}
 	for (i = 0; i < 32; i++){
@@ -187,16 +189,16 @@ void Registration_Member(){
 	return NULL;
 
 }
-/*—š—ğŠm”F*/
+/*å±¥æ­´ç¢ºèª*/
 void histry(){
-	printf("’N‚Ì—š—ğ‚ğŠm”F‚µ‚Ü‚·‚©H\nID‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B:");
+	printf("èª°ã®å±¥æ­´ã‚’ç¢ºèªã—ã¾ã™ã‹ï¼Ÿ\nIDã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚:");
 	scanf("%d", &no);
 	for (i = 0; i < count; i++){
-		if (a[i][0].ID == no){												/*ID‚ª“o˜^‚³‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©*/
+		if (a[i][0].ID == no){								/*IDãŒç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹*/
 			printf("ID:%d\n\n ", a[i][0].ID);
 			for (j = 0; j < count1[i]; j++){
 
-				printf("o‹ÎŠÔ:%4d”N%2dŒ%2d“ú%s—j“ú%d%d•ª%d•b\n  ",	 /*o‹Î‚Ì•\¦*/
+				printf("å‡ºå‹¤æ™‚é–“:%4då¹´%2dæœˆ%2dæ—¥%sæ›œæ—¥%dæ™‚%dåˆ†%dç§’\n  ",	 	/*å‡ºå‹¤æ™‚åˆ»ã®è¡¨ç¤º*/
 					a[i][j].start_time.gotowork_year,
 					a[i][j].start_time.gotowork_month,
 					a[i][j].start_time.gotowork_day,
@@ -204,7 +206,7 @@ void histry(){
 					a[i][j].start_time.gotowork_hour,
 					a[i][j].start_time.gotowork_minute,
 					a[i][j].start_time.gotowork_second);
-				printf("‘Ş‹ÎŠÔ:%4d”N%2dŒ%2d“ú%s—j“ú%d%d•ª%d•b\n",		/*‘Ş‹Î‚Ì•\¦*/
+				printf("é€€å‹¤æ™‚é–“:%4då¹´%2dæœˆ%2dæ—¥%sæ›œæ—¥%dæ™‚%dåˆ†%dç§’\n",		/*é€€å‹¤æ™‚åˆ»ã®è¡¨ç¤º*/
 					a[i][j].end_time.clockout_year,
 					a[i][j].end_time.clockout_month,
 					a[i][j].end_time.clockout_day,
@@ -212,21 +214,21 @@ void histry(){
 					a[i][j].end_time.clockout_hour,
 					a[i][j].end_time.clockout_minute,
 					a[i][j].end_time.clockout_second);
-				printf("ƒ^ƒCƒ€:%.1f \n\n", a[i][j].working_T);				/*‹Î–±ŠÔ‚Ì•\¦*/
+				printf("ã‚¿ã‚¤ãƒ :%.1f \n\n", a[i][j].working_T);			/*å‹¤å‹™æ™‚é–“ã®è¡¨ç¤º*/
 
 			}
 			return 0;
 		}
 		else if (i == count - 1)
-			printf("‚»‚ÌID‚Í“o˜^‚³‚ê‚Ä‚Ü‚¹‚ñB\n");
+			printf("ãã®IDã¯ç™»éŒ²ã•ã‚Œã¦ã¾ã›ã‚“ã€‚\n");
 	}
 	return 0;
 }
 
-/*ƒƒCƒ“*/
+/*ãƒ¡ã‚¤ãƒ³*/
 int main(){
 
-	for (i = 0; i < 5; i++){												/*‹Î–±ŠÔŒv‘ª‚Ì‚½‚ß‚Ì•Ï”‚ğ‚·‚×‚Ä0‚É‚·‚é*/
+	for (i = 0; i < 5; i++){								/*å‹¤å‹™æ™‚é–“è¨ˆæ¸¬ã®ãŸã‚ã®å¤‰æ•°ã‚’ã™ã¹ã¦0ã«ã™ã‚‹*/
 		for (j = 0; j < 32; j++){
 			a[i][j].start_T = 0;
 			a[i][j].end_T = 0;
@@ -234,7 +236,7 @@ int main(){
 	}
 	int menu;
 	while (1){
-		printf("1)o‹Î 2)‘Ş‹Î 3)ID“o˜^ 4)—š—ğŠm”F 5)I—¹F");
+		printf("1)å‡ºå‹¤ 2)é€€å‹¤ 3)IDç™»éŒ² 4)å±¥æ­´ç¢ºèª 5)çµ‚äº†ï¼š");
 		scanf("%d", &menu);
 		if (menu < 1 || menu >= 5) break;
 		switch (menu){
