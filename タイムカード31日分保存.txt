@@ -1,0 +1,248 @@
+#include <stdio.h>
+#include <time.h>
+int count = 0;					/*IDのカウント（IDが登録されるごとにカウント）*/
+int count1[5] = { 0 };				/*各IDの出勤カウント*/
+int flag;					/*出勤、退勤の取得を判断する変数*/
+int i, j;
+int  no;					/*IDのナンバー*/
+static char *week[] = { "日", "月", "火", "水", "木", "金", "土" };
+
+/*出勤時の時間記録*/
+typedef struct{
+	int gotowork_year;			/*年*/
+	int gotowork_month;			/*月*/
+	int gotowork_day;			/*日*/
+	int gotowork_week;			/*曜日*/
+	int gotowork_hour;			/*時*/
+	int gotowork_minute;			/*分*/
+	int gotowork_second;			/*秒*/
+}gotowork_T;
+
+/*退勤時の時間記録*/
+typedef struct{
+	int clockout_year;
+	int clockout_month;
+	int clockout_day;
+	int clockout_week;
+	int clockout_hour;
+	int clockout_minute;
+	int clockout_second;
+} clockout_T;
+
+/*退勤時出勤時及び*/
+typedef struct{
+	int ID;
+	clock_t start_T;			/*その日の勤務時間計測開始*/
+	clock_t end_T;				/*そのひの勤務時間計測終了*/
+	double working_T;
+	gotowork_T start_time;			/*その日の出勤時の時間記録*/
+	clockout_T end_time;			/*その日の退勤時の時間記録*/
+}worker;
+worker a[5][32];				/*5人分のID記録*/
+
+/*出勤時刻および退勤時刻の登録*/
+int put_data(int n, int flag){
+	time_t  now;;
+	struct tm
+		*tm_now;
+	now = time(NULL);
+	tm_now = localtime(&now);
+	if (flag == 0){
+		a[n][count1[n]].start_time.gotowork_year = tm_now->tm_year + 1900;
+		a[n][count1[n]].start_time.gotowork_month = tm_now->tm_mon + 1;
+		a[n][count1[n]].start_time.gotowork_day = tm_now->tm_mday;
+		a[n][count1[n]].start_time.gotowork_week = tm_now->tm_wday;
+		a[n][count1[n]].start_time.gotowork_hour = tm_now->tm_hour;
+		a[n][count1[n]].start_time.gotowork_minute = tm_now->tm_min;
+		a[n][count1[n]].start_time.gotowork_second = tm_now->tm_sec;
+	}
+	else if (flag == 1){
+		a[n][count1[n]].end_time.clockout_year = tm_now->tm_year + 1900;
+		a[n][count1[n]].end_time.clockout_month = tm_now->tm_mon + 1;
+		a[n][count1[n]].end_time.clockout_day = tm_now->tm_mday;
+		a[n][count1[n]].end_time.clockout_week = tm_now->tm_wday;
+		a[n][count1[n]].end_time.clockout_hour = tm_now->tm_hour;
+		a[n][count1[n]].end_time.clockout_minute = tm_now->tm_min;
+		a[n][count1[n]].end_time.clockout_second = tm_now->tm_sec;
+		a[n][count1[n]].working_T =
+			(double)((a[n][count1[n]].end_T - a[n][count1[n]].start_T) / CLOCKS_PER_SEC);/*勤務時間の計算*/
+	}
+}
+
+
+
+
+/*出勤入力*/
+void gotowork(){
+
+	if (count1 == 0){
+		printf("\a入力不能。IDの登録がありません。\n");
+		return NULL;
+	}
+	printf("IDを入力してください。 :");
+	scanf("%d", &no);
+	for (i = 0; i < count; i++){
+		if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T == 0){			/*その日に出勤されてるかどうか*/
+			a[i][count1[i]].start_T = clock();									/*勤務時間計測開始*/
+			flag = 0;
+			put_data(i, flag);													/*出勤時刻の登録*/
+			printf("出勤登録を完了しました。\n");
+			return NULL;
+		}
+		else if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T != 0){
+			printf("\a入力不能。既に出勤されてます。\n");
+			return NULL;
+		}
+		else if (i == count - 1){
+			printf("\a入力不能。そのIDは登録されてません。\n");
+			return NULL;
+		}
+	}
+}
+/*退勤入力*/
+void clockout(){
+	if (count == 0){
+		printf("\a入力不能。IDの登録がありません。\n");
+		return NULL;
+	}
+	printf("IDを入力してください。:");
+	scanf("%d", &no);													
+	for (i = 0; i < count; i++){
+		if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T != 0 && a[i][count1[i]].end_T == 0){				/*その日に退勤されてるかどうか*/
+			a[i][count1[i]].end_T = clock();																	/*勤務時間計測終了*/
+			flag = 1;
+			put_data(i, flag);																					/*退勤時刻の登録*/
+			count1[i]++;
+			for (i = 0; i < 5; i++){
+				if (count1[i] == 32){																			/*count1[i] == 32ならばデータを前日にづらす*/
+					for (int d = 0; d < 31; d++){
+						a[i][d].start_time.gotowork_year = a[i][d + 1].start_time.gotowork_year;
+						a[i][d].start_time.gotowork_month = a[i][d + 1].start_time.gotowork_month;
+						a[i][d].start_time.gotowork_day = a[i][d + 1].start_time.gotowork_day;
+						a[i][d].start_time.gotowork_week = a[i][d + 1].start_time.gotowork_week;
+						a[i][d].start_time.gotowork_hour = a[i][d + 1].start_time.gotowork_hour;
+						a[i][d].start_time.gotowork_minute = a[i][d + 1].start_time.gotowork_minute;
+						a[i][d].start_time.gotowork_second = a[i][d + 1].start_time.gotowork_second;
+
+						a[i][d].end_time.clockout_year = a[i][d + 1].end_time.clockout_year;
+						a[i][d].end_time.clockout_month = a[i][d + 1].end_time.clockout_month;
+						a[i][d].end_time.clockout_day = a[i][d + 1].end_time.clockout_day;
+						a[i][d].end_time.clockout_week = a[i][d + 1].end_time.clockout_week;
+						a[i][d].end_time.clockout_hour = a[i][d + 1].end_time.clockout_hour;
+						a[i][d].end_time.clockout_minute = a[i][d + 1].end_time.clockout_minute;
+						a[i][d].end_time.clockout_second = a[i][d + 1].end_time.clockout_second;
+						a[i][d].working_T = a[i][d + 1].working_T;
+
+						a[i][31].start_T = 0;
+						a[i][31].end_T = 0;
+					}
+					count1[i] = 31;
+				}
+			}
+			printf("退勤登録を完了しました。\n");
+
+			return NULL;
+		}
+		else if (a[i][count1[i]].ID == no&&a[i][count1[i]].start_T == 0){
+			printf("\a入力不能。出勤されてません。\n");
+			return NULL;
+		}
+		else if (a[i][count1[i]].ID == no&&a[i][count1[i]].end_T != 0){
+			printf("\a入力不能。既に退勤されてます。\n");
+			return NULL;
+		}
+		else if (i == count - 1){
+			printf("\a入力不能。そのIDは登録されてません。\n");
+			return NULL;
+		}
+	}
+}
+
+/*ID登録*/
+
+void Registration_Member(){
+	printf("ID3桁を入力してください。：");
+	scanf("%d", &no);
+	int i = no;
+	int digit = 0;
+	while (i != 0){											/*桁数のカウント*/
+		i = i / 10;
+		++digit;
+	}
+	for (i = 0; i < count; i++){
+		if (a[i][0].ID == no){
+			printf("\a登録不能。既に登録されてます。\n");
+			return NULL;
+		}
+	}
+	if (digit != 3){
+		printf("\a登録不能。3桁で入力してください。\n");
+		return NULL;
+	}
+	for (i = 0; i < 32; i++){
+		a[count][i].ID = no;
+	}
+	count++;
+
+	return NULL;
+
+}
+/*履歴確認*/
+void histry(){
+	printf("誰の履歴を確認しますか？\nIDを入力してください。:");
+	scanf("%d", &no);
+	for (i = 0; i < count; i++){
+		if (a[i][0].ID == no){												/*IDが登録されているかどうか*/
+			printf("ID:%d\n\n ", a[i][0].ID);
+			for (j = 0; j < count1[i]; j++){
+
+				printf("出勤時間:%4d年%2d月%2d日%s曜日%d時%d分%d秒\n  ",	 /*出勤時刻の表示*/
+					a[i][j].start_time.gotowork_year,
+					a[i][j].start_time.gotowork_month,
+					a[i][j].start_time.gotowork_day,
+					week[a[i][j].start_time.gotowork_week],
+					a[i][j].start_time.gotowork_hour,
+					a[i][j].start_time.gotowork_minute,
+					a[i][j].start_time.gotowork_second);
+				printf("退勤時間:%4d年%2d月%2d日%s曜日%d時%d分%d秒\n",		/*退勤時刻の表示*/
+					a[i][j].end_time.clockout_year,
+					a[i][j].end_time.clockout_month,
+					a[i][j].end_time.clockout_day,
+					week[a[i][j].end_time.clockout_week],
+					a[i][j].end_time.clockout_hour,
+					a[i][j].end_time.clockout_minute,
+					a[i][j].end_time.clockout_second);
+				printf("タイム:%.1f \n\n", a[i][j].working_T);				/*勤務時間の表示*/
+
+			}
+			return 0;
+		}
+		else if (i == count - 1)
+			printf("そのIDは登録されてません。\n");
+	}
+	return 0;
+}
+
+/*メイン*/
+int main(){
+
+	for (i = 0; i < 5; i++){												/*勤務時間計測のための変数をすべて0にする*/
+		for (j = 0; j < 32; j++){
+			a[i][j].start_T = 0;
+			a[i][j].end_T = 0;
+		}
+	}
+	int menu;
+	while (1){
+		printf("1)出勤 2)退勤 3)ID登録 4)履歴確認 5)終了：");
+		scanf("%d", &menu);
+		if (menu < 1 || menu >= 5) break;
+		switch (menu){
+		case 1:gotowork(); break;
+		case 2:clockout(); break;
+		case 3:Registration_Member(); break;
+		case 4:histry(); break;
+		}
+	}
+	return 0;
+}
