@@ -195,10 +195,10 @@ void histry(){
 	scanf("%d", &no);
 	for (i = 0; i < count; i++){
 		if (a[i][0].ID == no){								/*IDが登録されているかどうか*/
-			printf("ID:%d\n\n ", a[i][0].ID);
+			printf("ID:%d\n\n", a[i][0].ID);
 			for (j = 0; j < count1[i]; j++){
 
-				printf("出勤時間:%4d年%2d月%2d日%s曜日%d時%d分%d秒\n  ",	 	/*出勤時刻の表示*/
+				printf("出勤時間:%4d年%2d月%2d日%s曜日%d時%d分%d秒\n",	 	/*出勤時刻の表示*/
 					a[i][j].start_time.gotowork_year,
 					a[i][j].start_time.gotowork_month,
 					a[i][j].start_time.gotowork_day,
@@ -214,7 +214,7 @@ void histry(){
 					a[i][j].end_time.clockout_hour,
 					a[i][j].end_time.clockout_minute,
 					a[i][j].end_time.clockout_second);
-				printf("タイム:%.1f \n\n", a[i][j].working_T);			/*勤務時間の表示*/
+				printf("勤務時間:%.1f秒 \n\n", a[i][j].working_T);			/*勤務時間の表示*/
 
 			}
 			return 0;
@@ -236,7 +236,7 @@ int main(){
 	}
 	int menu;
 	while (1){
-		printf("1)出勤 2)退勤 3)ID登録 4)履歴確認 5)終了：");
+		printf("メニュー\n1)出勤 2)退勤 3)ID登録 4)履歴確認 5)終了：");
 		scanf("%d", &menu);
 		if (menu < 1 || menu >= 5) break;
 		switch (menu){
